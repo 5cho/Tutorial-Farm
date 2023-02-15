@@ -18,6 +18,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler,IDragHandler,IEn
     [HideInInspector] public ItemDetails itemDetails;
     [SerializeField] private GameObject itemPrefab = null;
     [HideInInspector] public int itemQuantity;
+    [SerializeField] private int slotNumber = 0;
 
     private void Start()
     {
@@ -69,7 +70,9 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler,IDragHandler,IEn
 
             if(eventData.pointerCurrentRaycast.gameObject != null && eventData.pointerCurrentRaycast.gameObject.GetComponent<UIInventorySlot>() != null)
             {
+                int toSlotNumber = eventData.pointerCurrentRaycast.gameObject.GetComponent<UIInventorySlot>().slotNumber;
 
+                InventoryManager.Instance.SwapInventoryItems(InventoryLocation.player, slotNumber, toSlotNumber);
             }
             else
             {
