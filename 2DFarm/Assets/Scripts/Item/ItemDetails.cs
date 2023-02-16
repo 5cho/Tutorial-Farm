@@ -9,7 +9,7 @@ public class ItemDetails
     public ItemType itemType;
     public string itemDescription;
     public Sprite itemSprite;
-    public string longDescription;
+    public string itemLongDescription;
     public short itemUseGridRadius;
     public float itemUseRadius;
     public bool isStartingItem;
