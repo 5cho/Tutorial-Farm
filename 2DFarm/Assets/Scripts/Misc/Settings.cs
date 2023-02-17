@@ -17,6 +17,9 @@ public static class Settings
     public static int playerInitialInventoryCapacity = 24;
     public static int playerMaximumInventoryCapacity = 48;
 
+    //Time system
+    public const float secondsPerGameSecond = 0.012f;
+
 
     //Player Animation Parameters
     public static int inputX;
