@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : SingletonMonoBehaviour<Player>
 {
+    private AnimationOverrides animationOverrides;
+
     //Movement Parameters
     private float xInput;
     private float yInput;
@@ -37,7 +39,14 @@ public class Player : SingletonMonoBehaviour<Player>
     private Direction playerDirection;
 #pragma warning restore 414
 
+    private List<CharacterAttribute> characterAttributeCustomisationList;
     private float movementSpeed;
+
+    [Tooltip("Should be populated in the prefab with the equipped item sprite renderer")]
+    [SerializeField] private SpriteRenderer equippedItemSpriteRenderer;
+
+    private CharacterAttribute armsCharacterAttribute;
+    private CharacterAttribute toolCharacterAttribute;
 
     private bool _playerInputIsDisabled = false;
     public bool PlayerInputIsDisabled { get => _playerInputIsDisabled; set => _playerInputIsDisabled = value; }
@@ -47,6 +56,12 @@ public class Player : SingletonMonoBehaviour<Player>
         base.Awake();
 
         rigidBody2D = GetComponent<Rigidbody2D>();
+
+        animationOverrides = GetComponentInChildren<AnimationOverrides>();
+
+        armsCharacterAttribute = new CharacterAttribute(CharacterPartAnimator.arms, PartVariantColor.none, PartVariantType.none);
+
+        characterAttributeCustomisationList = new List<CharacterAttribute>();
 
         mainCamera = Camera.main;
     }
@@ -207,4 +222,33 @@ public class Player : SingletonMonoBehaviour<Player>
         return mainCamera.WorldToViewportPoint(transform.position);
     }
 
+    public void ClearCarriedItem()
+    {
+        equippedItemSpriteRenderer.sprite = null;
+        equippedItemSpriteRenderer.color = new Color(1f, 1f, 1f, 0f);
+
+        armsCharacterAttribute.partVariantType = PartVariantType.none;
+        characterAttributeCustomisationList.Clear();
+        characterAttributeCustomisationList.Add(armsCharacterAttribute);
+        animationOverrides.ApplyCharacterCustomisationParamaters(characterAttributeCustomisationList);
+
+        isCarrying = false;
+    }
+
+    public void ShowCarriedItem(int itemCode)
+    {
+        ItemDetails itemDetails = InventoryManager.Instance.GetItemDetails(itemCode);
+        if(itemDetails != null)
+        {
+            equippedItemSpriteRenderer.sprite = itemDetails.itemSprite;
+            equippedItemSpriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+
+            armsCharacterAttribute.partVariantType = PartVariantType.carry;
+            characterAttributeCustomisationList.Clear();
+            characterAttributeCustomisationList.Add(armsCharacterAttribute);
+            animationOverrides.ApplyCharacterCustomisationParamaters(characterAttributeCustomisationList);
+
+            isCarrying = true;
+        }
+    }
 }
