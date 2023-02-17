@@ -78,6 +78,8 @@ public class Player : SingletonMonoBehaviour<Player>
 
             PlayerWalkInput();
 
+            PlayerTestInput();
+
             EventHandler.CallMovementEvent(xInput, yInput, isWalking, isRunning, isIdle, isCarrying, toolEffect,
                 isUsingToolUp, isUsingToolDown, isUsingToolLeft, isUsingToolRight,
                 isLiftingToolUp, isLiftingToolDown, isLiftingToolLeft, isLiftingToolRight,
@@ -183,6 +185,19 @@ public class Player : SingletonMonoBehaviour<Player>
             isWalking = false;
             isIdle = false;
             movementSpeed = Settings.runningSpeed;
+        }
+    }
+
+    private void PlayerTestInput()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            TimeManager.Instance.TestAdvanceGameMinute();
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            TimeManager.Instance.TestAdvanceGameDay();
         }
     }
     private void ResetMovement()
