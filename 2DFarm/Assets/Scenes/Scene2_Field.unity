@@ -16806,6 +16806,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoundsConfiner
       objectReference: {fileID: 0}
+    - target: {fileID: 3737954338283043662, guid: 4f67062cf68ec184dac0149edb29f380, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[1].y
+      value: -30.033613
+      objectReference: {fileID: 0}
+    - target: {fileID: 3737954338283043662, guid: 4f67062cf68ec184dac0149edb29f380, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[2].x
+      value: 40.997246
+      objectReference: {fileID: 0}
+    - target: {fileID: 3737954338283043662, guid: 4f67062cf68ec184dac0149edb29f380, type: 3}
+      propertyPath: m_Points.m_Paths.Array.data[0].Array.data[2].y
+      value: -29.990469
+      objectReference: {fileID: 0}
     - target: {fileID: 4406303030366528375, guid: 4f67062cf68ec184dac0149edb29f380, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -18416,7 +18428,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3760525766173990386, guid: 967a3cbafaf021b4d9527f234e0fe37b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -29.34
+      value: -29.35
       objectReference: {fileID: 0}
     - target: {fileID: 3760525766173990386, guid: 967a3cbafaf021b4d9527f234e0fe37b, type: 3}
       propertyPath: m_LocalPosition.z
