@@ -1,3 +1,11 @@
+public enum GridBoolProperty
+{
+    diggable,
+    canDropItem,
+    canPlaceFurniture,
+    isPath,
+    isNPCObstacle
+}
 public enum SceneName
 {
     Scene1_Farm,
