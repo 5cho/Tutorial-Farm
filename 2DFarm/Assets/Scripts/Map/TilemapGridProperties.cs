@@ -43,7 +43,7 @@ public class TilemapGridProperties : MonoBehaviour
                 Vector3Int startCell = tilemap.cellBounds.min;
                 Vector3Int endCell = tilemap.cellBounds.max;
 
-                for(int x = startCell.x; x < endCell.y; x++)
+                for(int x = startCell.x; x < endCell.x; x++)
                 {
                     for(int y = startCell.y; y < endCell.y; y++)
                     {

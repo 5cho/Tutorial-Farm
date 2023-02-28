@@ -54,7 +54,7 @@ MonoBehaviour:
     itemDescription: Basic Watering Can
     itemSprite: {fileID: 21300136, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 1
+    itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 1
     canBePickedUp: 1
@@ -66,7 +66,7 @@ MonoBehaviour:
     itemDescription: Basic Hoeing tool
     itemSprite: {fileID: 21300052, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 1
+    itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 1
     canBePickedUp: 1
@@ -78,7 +78,7 @@ MonoBehaviour:
     itemDescription: Basic Axe
     itemSprite: {fileID: 21300010, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 1
+    itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 1
     canBePickedUp: 1
@@ -162,7 +162,7 @@ MonoBehaviour:
     itemDescription: Wicker Basket
     itemSprite: {fileID: 21300504, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 1
+    itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 1
     canBePickedUp: 1
@@ -174,7 +174,7 @@ MonoBehaviour:
     itemDescription: Basic Pickaxe
     itemSprite: {fileID: 21300094, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 1
+    itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 1
     canBePickedUp: 1
@@ -222,7 +222,7 @@ MonoBehaviour:
     itemDescription: Basic Scythe
     itemSprite: {fileID: 21300506, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: 
-    itemUseGridRadius: 2
+    itemUseGridRadius: 0
     itemUseRadius: 1.5
     isStartingItem: 1
     canBePickedUp: 1
