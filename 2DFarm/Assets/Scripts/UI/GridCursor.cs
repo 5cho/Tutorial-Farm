@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 public class GridCursor : MonoBehaviour
 {
     private Canvas canvas;
@@ -99,6 +100,13 @@ public class GridCursor : MonoBehaviour
                         return;
                     }
                     break;
+                case ItemType.Hoeing_tool:
+                    if(!IsCursorValidForTool(gridPropertyDetails, itemDetails))
+                    {
+                        SetCursorToInvalid();
+                        return;
+                    }
+                    break;
                 case ItemType.none:
                     break;
                 case ItemType.count:
@@ -111,6 +119,44 @@ public class GridCursor : MonoBehaviour
         {
             SetCursorToInvalid();
             return;
+        }
+    }
+    private bool IsCursorValidForTool(GridPropertyDetails gridPropertyDetails, ItemDetails itemDetails)
+    {
+        switch(itemDetails.itemType)
+        {
+            case ItemType.Hoeing_tool:
+                if(gridPropertyDetails.isDiggable == true && gridPropertyDetails.daysSinceDug == -1)
+                {
+                    Vector3 cursorWorldPosition = new Vector3(GetWorldPositionForCursor().x + 0.5f, GetWorldPositionForCursor().y + 0.5f, 0f);
+                    List<Item> itemList = new List<Item>();
+                    HelperMethods.GetComponentsAtBoxLocation<Item>(out itemList, cursorWorldPosition, Settings.cursorSize, 0f);
+
+                    bool foundReapable = false;
+                    foreach(Item item in itemList)
+                    {
+                        if(InventoryManager.Instance.GetItemDetails(item.ItemCode).itemType == ItemType.Reapable_scenary)
+                        {
+                            foundReapable = true;
+                            break;
+                        }
+                    }
+                    if (foundReapable)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+
+            default:
+                return false;
         }
     }
     private bool IsCursorValidForSeed(GridPropertyDetails gridPropertyDetails)
@@ -146,5 +192,9 @@ public class GridCursor : MonoBehaviour
         Vector3 gridWorldPosition = grid.CellToWorld(gridPosition);
         Vector2 gridScreenPosition = mainCamera.WorldToScreenPoint(gridWorldPosition);
         return RectTransformUtility.PixelAdjustPoint(gridScreenPosition, cursorRectTransform, canvas);
+    }
+    public Vector3 GetWorldPositionForCursor()
+    {
+        return grid.CellToWorld(GetGridPositionForCursor());
     }
 }
