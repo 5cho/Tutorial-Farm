@@ -37,6 +37,8 @@ public class Player : SingletonMonoBehaviour<Player>
 
     private Camera mainCamera;
     private WaitForSeconds useToolAnimationPause;
+    private WaitForSeconds liftToolAnimationPause;
+    private WaitForSeconds afterLiftToolAnimationPause;
     private bool playerToolUseDisabled = false;
 
 #pragma warning disable 414
@@ -74,6 +76,8 @@ public class Player : SingletonMonoBehaviour<Player>
         gridCursor = FindObjectOfType<GridCursor>();
         useToolAnimationPause = new WaitForSeconds(Settings.useToolAnimationPause);
         afterUseToolAnimationPause = new WaitForSeconds(Settings.afterUseToolAnimationPause);
+        liftToolAnimationPause = new WaitForSeconds(Settings.liftToolAnimationPause);
+        afterLiftToolAnimationPause = new WaitForSeconds(Settings.afterLiftToolAnimationPause);
     }
     private void Update()
     {
@@ -237,6 +241,7 @@ public class Player : SingletonMonoBehaviour<Player>
                         ProcessPlayerClickInputCommodity(itemDetails);
                     }
                     break;
+                case ItemType.Watering_tool:
                 case ItemType.Hoeing_tool:
                     ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     break;
@@ -292,6 +297,12 @@ public class Player : SingletonMonoBehaviour<Player>
                     HoeGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
                 break;
+            case ItemType.Watering_tool:
+                if (gridCursor.CursorPositionIsValid)
+                {
+                    WaterGroundAtCursor(gridPropertyDetails, playerDirection);
+                }
+                break;
             default:
                 break;
         }
@@ -333,7 +344,52 @@ public class Player : SingletonMonoBehaviour<Player>
             gridPropertyDetails.daysSinceDug = 0;
         }
         GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+        GridPropertiesManager.Instance.DisplayDugGround(gridPropertyDetails);
         yield return afterUseToolAnimationPause;
+        PlayerInputIsDisabled = false;
+        playerToolUseDisabled = false;
+    }
+    private void WaterGroundAtCursor(GridPropertyDetails gridPropertDetails, Vector3Int playerDirection)
+    {
+        StartCoroutine(WaterGroundAtCursorRoutine(playerDirection, gridPropertDetails));
+    }
+    private IEnumerator WaterGroundAtCursorRoutine(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
+    {
+        PlayerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        toolCharacterAttribute.partVariantType = PartVariantType.wateringCan;
+        characterAttributeCustomisationList.Clear();
+        characterAttributeCustomisationList.Add(toolCharacterAttribute);
+        animationOverrides.ApplyCharacterCustomisationParamaters(characterAttributeCustomisationList);
+        toolEffect = ToolEffect.watering;
+        if(playerDirection == Vector3Int.right)
+        {
+            isLiftingToolRight = true;
+        }
+        if (playerDirection == Vector3Int.left)
+        {
+            isLiftingToolLeft = true;
+        }
+        if (playerDirection == Vector3Int.up)
+        {
+            isLiftingToolUp = true;
+        }
+        if (playerDirection == Vector3Int.down)
+        {
+            isLiftingToolDown = true;
+        }
+        yield return liftToolAnimationPause;
+
+        if(gridPropertyDetails.daysSinceWatered == -1)
+        {
+            gridPropertyDetails.daysSinceWatered = 0;
+        }
+
+        GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+        
+        yield return afterLiftToolAnimationPause;
+
         PlayerInputIsDisabled = false;
         playerToolUseDisabled = false;
     }
