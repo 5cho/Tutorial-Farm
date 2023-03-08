@@ -13,6 +13,8 @@ public static class Settings
     public const float gridCellSize = 1f;
     public static Vector2 cursorSize = Vector2.one;
 
+    public static float playerCenterYOffset = 0.875f;
+
     //Player Movement
     public const float runningSpeed = 5.333f;
     public const float walkingSpeed = 2.666f;
