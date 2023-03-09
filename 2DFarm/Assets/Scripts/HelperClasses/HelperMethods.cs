@@ -64,7 +64,7 @@ public static class HelperMethods
         Physics2D.OverlapBoxNonAlloc(point, size, angle, collider2DArray);
         T tComponent = default(T);
         T[] componentArray = new T[collider2DArray.Length];
-        for(int i = collider2DArray.Length; i>= 0; i--)
+        for(int i = collider2DArray.Length -1; i>= 0; i--)
         {
             if (collider2DArray[i] != null)
             {

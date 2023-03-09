@@ -7,6 +7,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private WaitForSeconds afterUseToolAnimationPause;
     private AnimationOverrides animationOverrides;
     private GridCursor gridCursor;
+    private Cursor cursor;
 
     //Movement Parameters
     private float xInput;
@@ -24,7 +25,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private bool isUsingToolUp;
     private bool isSwingingToolDown;
     private bool isSwingingToolLeft;
-    private bool isSwingingTooldRight;
+    private bool isSwingingToolRight;
     private bool isSwingingToolUp;
     private bool isWalking;
     private bool isPickingUp;
@@ -66,7 +67,7 @@ public class Player : SingletonMonoBehaviour<Player>
         animationOverrides = GetComponentInChildren<AnimationOverrides>();
 
         armsCharacterAttribute = new CharacterAttribute(CharacterPartAnimator.arms, PartVariantColor.none, PartVariantType.none);
-
+        toolCharacterAttribute = new CharacterAttribute(CharacterPartAnimator.tool, PartVariantColor.none, PartVariantType.hoe);
         characterAttributeCustomisationList = new List<CharacterAttribute>();
 
         mainCamera = Camera.main;
@@ -74,6 +75,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private void Start()
     {
         gridCursor = FindObjectOfType<GridCursor>();
+        cursor = FindObjectOfType<Cursor>();
         useToolAnimationPause = new WaitForSeconds(Settings.useToolAnimationPause);
         afterUseToolAnimationPause = new WaitForSeconds(Settings.afterUseToolAnimationPause);
         liftToolAnimationPause = new WaitForSeconds(Settings.liftToolAnimationPause);
@@ -99,7 +101,7 @@ public class Player : SingletonMonoBehaviour<Player>
                 isUsingToolUp, isUsingToolDown, isUsingToolLeft, isUsingToolRight,
                 isLiftingToolUp, isLiftingToolDown, isLiftingToolLeft, isLiftingToolRight,
                 isPickingUp, isPickingDown, isPickingLeft, isPickingRight,
-                isSwingingToolUp, isSwingingToolDown, isSwingingToolLeft, isSwingingTooldRight,
+                isSwingingToolUp, isSwingingToolDown, isSwingingToolLeft, isSwingingToolRight,
                 false, false, false, false);
         }
 
@@ -132,7 +134,7 @@ public class Player : SingletonMonoBehaviour<Player>
         isUsingToolUp = false;
         isSwingingToolDown = false;
         isSwingingToolLeft = false;
-        isSwingingTooldRight = false;
+        isSwingingToolRight = false;
         isSwingingToolUp = false;
         isPickingUp = false;
         isPickingDown = false;
@@ -209,7 +211,7 @@ public class Player : SingletonMonoBehaviour<Player>
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if(gridCursor.CursorIsEnabled)
+                if(gridCursor.CursorIsEnabled || cursor.CursorIsEnabled)
                 {
                     Vector3Int cursorGridPosition = gridCursor.GetGridPositionForCursor();
                     Vector3Int playerGridPosition = gridCursor.GetGridPositionForPlayer();
@@ -243,6 +245,7 @@ public class Player : SingletonMonoBehaviour<Player>
                     break;
                 case ItemType.Watering_tool:
                 case ItemType.Hoeing_tool:
+                case ItemType.Reaping_tool:
                     ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     break;
                 case ItemType.none:
@@ -273,6 +276,38 @@ public class Player : SingletonMonoBehaviour<Player>
             return Vector3Int.down;
         }
     }
+    private Vector3Int GetPlayerDirection(Vector3 cursorPosition, Vector3 playerPosition)
+    {
+        if (
+            cursorPosition.x > playerPosition.x
+            &&
+            cursorPosition.y < (playerPosition.y + cursor.ItemUseRadius / 2)
+            &&
+            cursorPosition.y > (playerPosition.y - cursor.ItemUseRadius / 2)
+            )
+        {
+            return Vector3Int.right;
+        }
+        else if (
+            cursorPosition.x < playerPosition.x
+            &&
+            cursorPosition.y < (playerPosition.y + cursor.ItemUseRadius / 2)
+            &&
+            cursorPosition.y > (playerPosition.y - cursor.ItemUseRadius / 2)
+            )
+        {
+            return Vector3Int.left;
+        }
+        else if (cursorPosition.y > playerPosition.y)
+        {
+            return Vector3Int.up;
+        }
+        else
+        {
+            return Vector3Int.down;
+        }
+
+    }
     private void ProcessPlayerClickInputSeed(ItemDetails itemDetails)
     {
         if(itemDetails.canBeDropped && gridCursor.CursorPositionIsValid)
@@ -301,6 +336,13 @@ public class Player : SingletonMonoBehaviour<Player>
                 if (gridCursor.CursorPositionIsValid)
                 {
                     WaterGroundAtCursor(gridPropertyDetails, playerDirection);
+                }
+                break;
+            case ItemType.Reaping_tool:
+                if (cursor.CursorPositionIsValid)
+                {
+                    playerDirection = GetPlayerDirection(cursor.GetWorldPositionForCursor(), GetPlayerCenterPosition());
+                    ReapInPlayerDirectionAtCursor(itemDetails, playerDirection);
                 }
                 break;
             default:
@@ -393,6 +435,74 @@ public class Player : SingletonMonoBehaviour<Player>
         PlayerInputIsDisabled = false;
         playerToolUseDisabled = false;
     }
+    private void ReapInPlayerDirectionAtCursor(ItemDetails itemDetails, Vector3Int playerDirection)
+    {
+        StartCoroutine(ReapInPlayerDirectionAtCursorRoutine(itemDetails, playerDirection));
+    }
+    private IEnumerator ReapInPlayerDirectionAtCursorRoutine(ItemDetails itemDetails, Vector3Int playerDirection)
+    {
+        PlayerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        toolCharacterAttribute.partVariantType = PartVariantType.scythe;
+        characterAttributeCustomisationList.Clear();
+        characterAttributeCustomisationList.Add(toolCharacterAttribute);
+        animationOverrides.ApplyCharacterCustomisationParamaters(characterAttributeCustomisationList);
+        UseToolInPlayerDirection(itemDetails, playerDirection);
+        
+        yield return useToolAnimationPause;
+
+        PlayerInputIsDisabled = false;
+        playerToolUseDisabled = false;
+    }
+    private void UseToolInPlayerDirection(ItemDetails equippedItemDetails, Vector3Int playerDirection)
+    {
+        if (Input.GetMouseButton(0))
+        {
+            switch (equippedItemDetails.itemType)
+            {
+                case ItemType.Reaping_tool:
+                    if (playerDirection == Vector3Int.right)
+                    {
+                        isSwingingToolRight = true;
+                    }
+                    else if (playerDirection == Vector3Int.left)
+                    {
+                        isSwingingToolLeft = true;
+                    }
+                    else if (playerDirection == Vector3Int.up)
+                    {
+                        isSwingingToolUp = true;
+                    }
+                    else if (playerDirection == Vector3Int.down)
+                    {
+                        isSwingingToolDown = true;
+                    }
+                    break;
+            }
+
+            Vector2 point = new Vector2(GetPlayerCenterPosition().x + (playerDirection.x * (equippedItemDetails.itemUseRadius / 2f)),
+                GetPlayerCenterPosition().y + playerDirection.y * (equippedItemDetails.itemUseRadius / 2));
+            Vector2 size = new Vector2(equippedItemDetails.itemUseRadius, equippedItemDetails.itemUseRadius);
+            Item[] itemArray = HelperMethods.GetComponentsAtBoxLocationNonAlloc<Item>(Settings.maxCollidersToTestPerReapSwing, point, size, 0f);
+            int reapableItemCount = 0;
+            for(int i = itemArray.Length - 1; i >= 0; i--)
+            {
+                if (itemArray[i] != null)
+                {
+                    if(InventoryManager.Instance.GetItemDetails(itemArray[i].ItemCode).itemType == ItemType.Reapable_scenary)
+                    {
+                        Vector3 effectPosition = new Vector3(itemArray[i].transform.position.x, itemArray[i].transform.position.y + Settings.gridCellSize / 2f,
+                            itemArray[i].transform.position.z);
+                        Destroy(itemArray[i].gameObject);
+                        reapableItemCount++;
+                        if (reapableItemCount >= Settings.maxTargetComponentsToDestroyPerReapSwing)
+                            break;
+                    }
+                }
+            }
+        }
+    }
     private void PlayerTestInput()
     {
         if (Input.GetKeyDown(KeyCode.T))
@@ -427,7 +537,7 @@ public class Player : SingletonMonoBehaviour<Player>
                 isUsingToolUp, isUsingToolDown, isUsingToolLeft, isUsingToolRight,
                 isLiftingToolUp, isLiftingToolDown, isLiftingToolLeft, isLiftingToolRight,
                 isPickingUp, isPickingDown, isPickingLeft, isPickingRight,
-                isSwingingToolUp, isSwingingToolDown, isSwingingToolLeft, isSwingingTooldRight,
+                isSwingingToolUp, isSwingingToolDown, isSwingingToolLeft, isSwingingToolRight,
                 false, false, false, false);
 
     }
@@ -446,6 +556,7 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         return mainCamera.WorldToViewportPoint(transform.position);
     }
+    
 
     public void ClearCarriedItem()
     {
