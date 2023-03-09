@@ -72,6 +72,16 @@ public class Player : SingletonMonoBehaviour<Player>
 
         mainCamera = Camera.main;
     }
+    private void OnEnable()
+    {
+        EventHandler.BeforeSceneUnloadFadeOutEvent += DisablePlayerInputAndResetMovement;
+        EventHandler.AfterSceneLoadEvent += EnablePlayerInput;
+    }
+    private void OnDisable()
+    {
+        EventHandler.BeforeSceneUnloadFadeOutEvent -= DisablePlayerInputAndResetMovement;
+        EventHandler.AfterSceneLoadEvent -= EnablePlayerInput;
+    }
     private void Start()
     {
         gridCursor = FindObjectOfType<GridCursor>();
@@ -494,6 +504,7 @@ public class Player : SingletonMonoBehaviour<Player>
                     {
                         Vector3 effectPosition = new Vector3(itemArray[i].transform.position.x, itemArray[i].transform.position.y + Settings.gridCellSize / 2f,
                             itemArray[i].transform.position.z);
+                        EventHandler.CallHarvestActionEvent(effectPosition, HarvestActionEffect.reaping);
                         Destroy(itemArray[i].gameObject);
                         reapableItemCount++;
                         if (reapableItemCount >= Settings.maxTargetComponentsToDestroyPerReapSwing)
@@ -519,6 +530,7 @@ public class Player : SingletonMonoBehaviour<Player>
         {
             SceneControllerManager.Instance.FadeAndLoadScene(SceneName.Scene1_Farm.ToString(), transform.position);
         }
+        
     }
     private void ResetMovement()
     {
