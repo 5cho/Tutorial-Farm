@@ -19,6 +19,14 @@ public static class EventHandler
             DropSelectedItemEvent();
         }
     }
+
+    public static event Action RemoveSelectedItemFromInventoryEvent;
+    public static void CallRemoveSelectedItemFromInventoryEvent()
+    {
+        if (RemoveSelectedItemFromInventoryEvent != null)
+            RemoveSelectedItemFromInventoryEvent();
+    }
+
     public static event Action<Vector3, HarvestActionEffect> HarvestActionEffectEvent;
     public static void CallHarvestActionEvent(Vector3 effectPosition, HarvestActionEffect harvestActionEffect)
     {

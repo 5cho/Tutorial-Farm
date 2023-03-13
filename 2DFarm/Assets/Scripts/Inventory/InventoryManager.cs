@@ -78,7 +78,20 @@ public class InventoryManager : SingletonMonoBehaviour<InventoryManager>
         inventoryItem.itemQuantity = 1;
         inventoryList.Add(inventoryItem);
     }
-
+    public void AddItem(InventoryLocation inventoryLocation, int itemCode)
+    {
+        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+        int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
+        if(itemPosition != -1)
+        {
+            AddItemAtPosition(inventoryList, itemCode, itemPosition);
+        }
+        else
+        {
+            AddItemAtPosition(inventoryList, itemCode);
+        }
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
+    }
     
 
     private void AddItemAtPosition(List<InventoryItem> inventoryList, int itemCode, int position)

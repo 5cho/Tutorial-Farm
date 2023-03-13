@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Tilemaps;
@@ -27,7 +28,9 @@ public class TilemapGridProperties : MonoBehaviour
             UpdateGridProperties();
             if(gridProperties != null)
             {
+
                 EditorUtility.SetDirty(gridProperties);
+
             }
         }   
     }
@@ -65,3 +68,4 @@ public class TilemapGridProperties : MonoBehaviour
         }
     }
 }
+#endif
