@@ -175,7 +175,7 @@ public class GridCursor : MonoBehaviour
                     CropDetails cropDetails = so_cropDetailsList.GetCropDetails(gridPropertyDetails.seedItemCode);
                     if(cropDetails != null)
                     {
-                        if(gridPropertyDetails.growthDays >= cropDetails.totalGrowthDays)
+                        if(gridPropertyDetails.growthDays >= cropDetails.growthDays[cropDetails.growthDays.Length -1])
                         {
                             if (cropDetails.CanUseToolToHarvestCrop(itemDetails.itemCode))
                             {
@@ -199,7 +199,14 @@ public class GridCursor : MonoBehaviour
     }
     private bool IsCursorValidForSeed(GridPropertyDetails gridPropertyDetails)
     {
-        return gridPropertyDetails.canDropItem;
+        if (gridPropertyDetails.growthDays > -1)
+        {
+            return false;
+        }
+        else
+        {
+            return gridPropertyDetails.canDropItem;
+        }
     }
     private bool IsCursorValidForCommodity(GridPropertyDetails gridPropertyDetails)
     {

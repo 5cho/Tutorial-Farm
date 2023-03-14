@@ -336,10 +336,14 @@ public class Player : SingletonMonoBehaviour<Player>
     }
     private void PlantSeedAtCursor(GridPropertyDetails gridPropertyDetails, ItemDetails itemDetails)
     {
-        gridPropertyDetails.seedItemCode = itemDetails.itemCode;
-        gridPropertyDetails.growthDays = 0;
-        GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
-        EventHandler.CallRemoveSelectedItemFromInventoryEvent();
+        if (GridPropertiesManager.Instance.GetCropDetails(itemDetails.itemCode) != null)
+        {
+            gridPropertyDetails.seedItemCode = itemDetails.itemCode;
+            gridPropertyDetails.growthDays = 0;
+            GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
+            EventHandler.CallRemoveSelectedItemFromInventoryEvent();
+        }
+
     }
     private void ProcessPlayerClickInputCommodity(ItemDetails itemDetails)
     {
@@ -517,7 +521,7 @@ public class Player : SingletonMonoBehaviour<Player>
             switch (equippedItemDetails.itemType)
             {
                 case ItemType.Collecting_tool:
-                    crop.ProcessToolAction(equippedItemDetails);
+                    crop.ProcessToolAction(equippedItemDetails, isPickingRight, isPickingLeft, isPickingDown, isLiftingToolUp);
                     break;
             }
         }
