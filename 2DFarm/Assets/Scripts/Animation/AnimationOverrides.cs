@@ -64,7 +64,7 @@ public class AnimationOverrides : MonoBehaviour
                     SO_AnimationType swapSO_AnimationType;
                     bool foundSwapAnimation = animationTypeDictionaryByCompositeAttributeKey.TryGetValue(key, out swapSO_AnimationType);
 
-                    if (foundAnimation)
+                    if (foundSwapAnimation)
                     {
                         AnimationClip swapAnimationClip = swapSO_AnimationType.animationClip;
 

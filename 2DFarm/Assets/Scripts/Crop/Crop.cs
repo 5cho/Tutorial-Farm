@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Crop : MonoBehaviour
 {
+    [Tooltip("This should be populated from child transform gameobject showing harvest effect spawn point")]
+    [SerializeField] private Transform harvestActionEffectTransfrom = null;
     [Tooltip("This should be populated from the child gameobject")]
     [SerializeField] private SpriteRenderer cropHarvestedSpriteRenderer = null;
 
@@ -39,6 +41,12 @@ public class Crop : MonoBehaviour
                 animator.SetTrigger("usetoolleft");
             }
         }
+
+        if (cropDetails.isHarvestedActionEffect)
+        {
+            EventHandler.CallHarvestActionEvent(harvestActionEffectTransfrom.position, cropDetails.harvestActionEffect);
+        }
+           
 
         harvestActionCount += 1;
         int requiredHarvestActions = cropDetails.RequiredHarvestActionsForTool(equippedItemDetails.itemCode);
