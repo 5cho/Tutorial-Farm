@@ -114,8 +114,13 @@ public class Crop : MonoBehaviour
     private void HarvestActions(CropDetails cropDetails, GridPropertyDetails gridPropertyDetails)
     {
         SpawnHarvestedItems(cropDetails);
+        if(cropDetails.harvestedTransformItemCode > 0)
+        {
+            CreateHarvestedTransformCrop(cropDetails, gridPropertyDetails);
+        }
         Destroy(gameObject);
     }
+
     private void SpawnHarvestedItems(CropDetails cropDetails)
     {
         for(int i = 0; i< cropDetails.cropProducedItemCode.Length; i++)
@@ -145,5 +150,16 @@ public class Crop : MonoBehaviour
                 }
             }
         }
+    }
+    private void CreateHarvestedTransformCrop(CropDetails cropDetails, GridPropertyDetails gridPropertyDetails)
+    {
+        gridPropertyDetails.seedItemCode = cropDetails.harvestedTransformItemCode;
+        gridPropertyDetails.growthDays = 0;
+        gridPropertyDetails.daysSinceLastHarvest = -1;
+        gridPropertyDetails.daysSinceWatered = -1;
+
+        GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+
+        GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
     }
 }
