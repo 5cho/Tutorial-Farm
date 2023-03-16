@@ -158,4 +158,12 @@ public static class EventHandler
             AfterSceneLoadFadeInEvent();
         }
     }
+    public static event Action InstantiateCropPrefabsEvent;
+    public static void CallInstantiateCropPrefabsEvent()
+    {
+        if(InstantiateCropPrefabsEvent != null)
+        {
+            InstantiateCropPrefabsEvent();
+        }
+    }
 }
