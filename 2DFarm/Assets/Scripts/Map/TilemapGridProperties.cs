@@ -1,10 +1,10 @@
-#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Tilemaps;
 [ExecuteAlways]
 public class TilemapGridProperties : MonoBehaviour
 {
+#if UNITY_EDITOR
     private Tilemap tilemap;
     [SerializeField] private SO_GridProperties gridProperties = null;
     [SerializeField] private GridBoolProperty gridBoolProperty = GridBoolProperty.diggable;
@@ -67,5 +67,5 @@ public class TilemapGridProperties : MonoBehaviour
             Debug.Log("Disable Property Tilemaps");
         }
     }
-}
 #endif
+}
