@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class Settings
 {
+    public const string PersistentScene = "PersistentScene";
+
     //Obscuring Item Fading - ObscuringItemFader
     public const float fadeInSeconds = 0.25f;
     public const float fadeOutSeconds = 0.25f;

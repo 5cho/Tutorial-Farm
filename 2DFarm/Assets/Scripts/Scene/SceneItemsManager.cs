@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 [RequireComponent(typeof(GenerateGUID))]
 public class SceneItemsManager : SingletonMonoBehaviour<SceneItemsManager>, ISaveable
 {
@@ -30,6 +31,19 @@ public class SceneItemsManager : SingletonMonoBehaviour<SceneItemsManager>, ISav
     public void ISaveableDeregister()
     {
         SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+    public void ISaveableLoad(GameSave gameSave)
+    {
+        if(gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+            ISaveableRestoreScene(SceneManager.GetActiveScene().name);
+        }
+    }
+    public GameObjectSave ISaveableSave()
+    {
+        ISaveableStoreScene(SceneManager.GetActiveScene().name);
+        return GameObjectSave;
     }
 
     private void OnEnable()

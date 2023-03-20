@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager : SingletonMonoBehaviour<InventoryManager>
+public class InventoryManager : SingletonMonoBehaviour<InventoryManager>, ISaveable
 {
+    private UIInventoryBar inventoryBar;
     private Dictionary<int, ItemDetails> itemDetailsDictionary;
 
     private int[] selectedInventoryItem; 
@@ -15,7 +16,10 @@ public class InventoryManager : SingletonMonoBehaviour<InventoryManager>
 
     [SerializeField] private SO_ItemList itemList = null;
 
-
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get { return _iSaveableUniqueID; } set { _iSaveableUniqueID = value; } }
+    private GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get { return _gameObjectSave; } set { _gameObjectSave = value; } }
     protected override void Awake()
     {
         base.Awake();
@@ -29,8 +33,73 @@ public class InventoryManager : SingletonMonoBehaviour<InventoryManager>
         {
             selectedInventoryItem[i] = -1;
         }
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+        GameObjectSave = new GameObjectSave();
     }
+    private void OnEnable()
+    {
+        ISaveableRegister();
+    }
+    private void OnDisable()
+    {
+        ISaveableDeregister();
+    }
+    private void Start()
+    {
+        inventoryBar = FindObjectOfType<UIInventoryBar>();
+    }
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+    public GameObjectSave ISaveableSave()
+    {
+        SceneSave sceneSave = new SceneSave();
+        GameObjectSave.sceneData.Remove(Settings.PersistentScene);
+        sceneSave.listInvItemArray = inventoryLists;
+        sceneSave.intArrayDictionary = new Dictionary<string, int[]>();
+        sceneSave.intArrayDictionary.Add("inventoryListCapacityArray", inventoryListCapacityIntArray);
+        GameObjectSave.sceneData.Add(Settings.PersistentScene, sceneSave);
+        return GameObjectSave;
+    }
+    public void ISaveableLoad(GameSave gameSave)
+    {
+        if(gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
 
+            if(gameObjectSave.sceneData.TryGetValue(Settings.PersistentScene,out SceneSave sceneSave))
+            {
+                if(sceneSave.listInvItemArray != null)
+                {
+                    inventoryLists = sceneSave.listInvItemArray;
+
+                    for(int i =0; i< (int)InventoryLocation.count; i++)
+                    {
+                        EventHandler.CallInventoryUpdatedEvent((InventoryLocation)i, inventoryLists[i]);
+                    }
+                    Player.Instance.ClearCarriedItem();
+                    inventoryBar.ClearHighlightOnInventorySlots();
+                }
+                if(sceneSave.intArrayDictionary != null && sceneSave.intArrayDictionary.TryGetValue("inventoryListCapacityArray", out int[] inventoryCapacityArray))
+                {
+                    inventoryListCapacityIntArray = inventoryCapacityArray;
+                }
+            }
+        }
+    }
+    public void ISaveableStoreScene(string sceneName)
+    {
+
+    }
+    public void ISaveableRestoreScene(string sceneName)
+    {
+
+    }
     private void CreateInventoryLists()
     {
         inventoryLists = new List<InventoryItem>[(int)InventoryLocation.count];
